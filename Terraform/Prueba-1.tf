@@ -1,7 +1,4 @@
-# main.tf
-
-# Creación de un archivo local
-resource "local_file" "example" {
-  filename = "hello.txt"
-  content  = "Hello, world!"
+resource "local_file" "foo" {
+  content  = "foo!"
+  filename = "D:\\TerraformProjects\\TFG\\foo.bar"
 }
