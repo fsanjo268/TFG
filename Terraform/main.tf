@@ -1,4 +1,4 @@
 resource "local_file" "foo" {
   content  = "foo!"
-  filename = "D:\\TerraformProjects\\TFG\\foo.txt"
+  filename = "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\TFG\\Terraform_1\\Terraformfoo.txt"
 }
