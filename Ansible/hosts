@@ -2,4 +2,4 @@
 VirtualTFG
 
 [localhost:vars]
-ansible_connection=localhost
+ansible_connection=local
