@@ -4,43 +4,49 @@ pipeline {
     
     parameters {
         choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
+
     }
     stages {
-        stage('Clonar repositorio Git') {
+        stage('Clean WorkSpace') {
             steps {
-            git url: 'https://github.com/fsanjo268/TFG.git', branch: 'main'
-            bat 'dir C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\TFG\\Terraform_1\\Terraform'
+                cleanWs()
             }
         }
-         stage('Inicializar Terraform') {
+        stage('Clone Git`s repository') {
             steps {
-                dir("C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\TFG\\Terraform_1\\Terraform"){
-                    bat 'D:\\Terraform\\terraform init'
+                git url: 'https://github.com/fsanjo268/TFG.git', branch: 'main'
+            }
+        }
+         stage('Terraform init') {
+            steps {
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
+                    sh 'terraform init'
                 }
             }
         }
-        stage('Planificar Infraestructura') {
+         stage('Terraform validate') {
             steps {
-                dir("C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\TFG\\Terraform_1\\Terraform"){
-                    bat 'D:\\Terraform\\terraform plan -out tfplan'                
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
+                    sh 'terraform validate'
+                }
+            }
+        }
+        stage('Infraestructure plannification ') {
+            steps {
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
+                    sh 'terraform plan -out tfplan'                
                 }
             }
         }
         
         stage('Apply / Destroy') {
             steps {
-                dir("C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\TFG\\Terraform_1\\Terraform"){
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
                     script {
                         if (params.action == 'apply') {
-                            //if (!params.autoApprove) {
-                               // def plan = readFile "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\TFG\\Terraform_1\\Terraform\\tfplan"
-                               // input message: "Do you want to apply the plan?",
-                                //parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-                            //}
-    
-                            bat 'D:\\Terraform\\terraform apply -input=false tfplan'
+                            sh 'terraform apply -input=false tfplan'
                         } else if (params.action == 'destroy') {
-                            bat 'D:\\Terraform\\terraform destroy --auto-approve'
+                            sh 'terraform destroy --auto-approve'
                         } else {
                             error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                         }
@@ -48,9 +54,11 @@ pipeline {
                 }
             }
         }
-        stage('AZ') {
+        stage('Hosts configuration Ansible') {
+            when { expression { params.action == 'apply'}}
             steps {
-                bat '"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az" login --tenant 5f2a1fdf-b755-40df-8d23-5c8d19455375'
+                sh "echo 'valido la conexion'"
+                sh "echo ejecuto el playbook"
             }
         }
     }
