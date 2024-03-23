@@ -7,7 +7,7 @@ pipeline {
 
     }
     stages {
-        stage('Clean WorkSpace') {
+        stage('CLean WorkSpace') {
             steps {
                 cleanWs()
             }
@@ -24,9 +24,16 @@ pipeline {
                 }
             }
         }
-         stage('Terraform validate') {
+         stage('Terraform code validation') {
             steps {
                 dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
+                    sh 'terraform validate'
+                }
+            }
+        }
+        stage('Ansible code validation') {
+            steps {
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks/${params.Exercise}"){
                     sh 'terraform validate'
                 }
             }
@@ -59,6 +66,13 @@ pipeline {
             steps {
                 sh "echo 'valido la conexion'"
                 sh "echo ejecuto el playbook"
+            }
+        }
+    }
+    post {
+        failure {
+            steps {
+                sh 'terraform destroy --auto-approve'
             }
         }
     }
