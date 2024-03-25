@@ -1,5 +1,6 @@
-variable "Promox_API_Token_Secret" {
+variable "Proxmox_API_Token_Secret" {
   type = string
+  sensitive = true
 }
 
 variable "pm_api_url" {
