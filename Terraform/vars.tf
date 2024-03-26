@@ -3,6 +3,11 @@ variable "Proxmox_API_Token_Secret" {
   sensitive = true
 }
 
+variable "lxc-password" {
+  type = string
+  sensitive = true
+}
+
 variable "pm_api_url" {
   default = "https://virtual.lab.inf.uva.es:20102/api2/json"
 }

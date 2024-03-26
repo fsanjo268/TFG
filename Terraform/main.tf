@@ -1,15 +1,17 @@
 resource "proxmox_lxc" "demo_lab" {
 
-  hostname = "test_vm-${count.index + 1}"
+  hostname = "test-vm-${count.index + 1}"
   count = 1
   target_node = var.pm_node_name
   vmid = 100 + count.index
 
-  ostemplate = "local:vztmpl/ubuntu-22.04-standar_22.004-1_amd64.tar.zst"
+  ostemplate = "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
   cores = 1
   memory = 512
+  start = true
 
   unprivileged = false
+  password = var.lxc-password
   ssh_public_keys = var.ssh_key
 
   rootfs {
