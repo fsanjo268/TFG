@@ -2,74 +2,81 @@
 pipeline {
     agent any
     
-    parameters {
-        choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
 
-    }
     stages {
-        stage('CLean WorkSpace') {
-            steps {
-                cleanWs()
-            }
-        }
         stage('Clone Git`s repository') {
             steps {
-                git url: 'https://github.com/fsanjo268/TFG.git', branch: 'main'
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios"){
+                    script{
+                        if (params.Action == 'apply') {
+                            cleanWs()
+                            git url: 'https://github.com/fsanjo268/TFG.git', branch: 'main' 
+                        }
+                    }
+                }
             }
         }
          stage('Terraform init') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
                     sh 'terraform init'
                 }
             }
         }
          stage('Terraform code validation') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
                     sh 'terraform validate'
                 }
             }
         }
-        stage('Ansible code validation') {
+         stage ('Ansible code validation') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks/${params.Exercise}"){
-                    sh 'terraform validate'
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks"){
+                    sh 'ansible-playbook --syntax-check ping.yaml'
                 }
             }
         }
         stage('Infraestructure plannification ') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
-                    sh 'terraform plan -out tfplan'                
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
+                     script{
+                        if (params.Action == 'apply') {
+                            sh 'terraform plan -out tfplan'      
+                        }
+                     }
                 }
             }
         }
         
         stage('Apply / Destroy') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/"){
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
                     script {
-                        if (params.action == 'apply') {
+                        if (params.Action == 'apply') {
                             sh 'terraform apply -input=false tfplan'
-                        } else if (params.action == 'destroy') {
+                        } else if (params.Action == 'destroy') {
                             sh 'terraform destroy --auto-approve'
-                        } else {
-                            error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                         }
                     }
                 }
             }
         }
-        stage('Hosts configuration Ansible') {
-            when { expression { params.action == 'apply'}}
+        stage('Check conection Ansible') {
+            when { expression { params.Action == 'apply'}}
             steps {
-                sh "echo 'valido la conexion'"
-                sh "echo ejecuto el playbook"
+                ansiblePlaybook installation: 'Ansible', inventory: '/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/hosts', playbook: '/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks/ping.yaml', vaultTmpPath: ''
             }
         }
     }
     post {
+        success {
+            script {
+                if (params.Action == 'destroy') {
+                    cleanWs()
+                }
+            }
+        }
         failure {
             steps {
                 sh 'terraform destroy --auto-approve'
