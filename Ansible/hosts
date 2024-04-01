@@ -1,5 +1,5 @@
-[localhost]
-VirtualTFG
+[ubuntu]
+test-vm-100 ansible_host=192.168.1.100
 
-[localhost:vars]
-ansible_connection=local
+[ubuntu:vars]
+ansible_connection=ssh
