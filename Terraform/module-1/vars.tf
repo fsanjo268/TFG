@@ -21,13 +21,13 @@ variable "pm_api_token_id" {
 variable "ssh_key_nodo_ansible" {
   description = "Clave SSH publica del nodo Proxmox ansible a insertar en la maquina virtual"
   type = string
-  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMhs1jtFG37tR6YVIvY+nWC3pb+SrKK8jRiweFodIHr usertfg@VirtualTFG"
+  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKskyaMLTz3C97I8k1gGQLWu/oxrNfBESq241A68GCbN ansible@tfg2010"
 }
 
 variable "ssh_key_nodo_root" {
   description = "Clave SSH publica del nodo Proxmox root a insertar en la maquina virtual"
   type = string
-  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMhs1jtFG37tR6YVIvY+nWC3pb+SrKK8jRiweFodIHr usertfg@VirtualTFG"
+  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlGhVOjcg+fhOQnF5UXgTfCJr2lTSRdmJO5zeDxcEbR root@tfg2010"
 }
 
 variable "pm_node_name" {
