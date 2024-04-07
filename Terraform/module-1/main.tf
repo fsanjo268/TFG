@@ -12,7 +12,10 @@ resource "proxmox_lxc" "demo_lab" {
 
   unprivileged = false
   password = var.lxc-password
-  ssh_public_keys = var.ssh_key
+  ssh_public_keys = <<-EOT
+    var.ssh_key_nodo_ansible
+    var.ssh_key_nodo_root
+  EOT
 
   rootfs {
     storage = "local"

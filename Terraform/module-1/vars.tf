@@ -18,8 +18,14 @@ variable "pm_api_token_id" {
   default = "terraformUSR@pam!token_promox_terraform"
 }
 
-variable "ssh_key" {
-  description = "Clave SSH publica a insertar en lla maquina virtual"
+variable "ssh_key_nodo_ansible" {
+  description = "Clave SSH publica del nodo Proxmox ansible a insertar en la maquina virtual"
+  type = string
+  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMhs1jtFG37tR6YVIvY+nWC3pb+SrKK8jRiweFodIHr usertfg@VirtualTFG"
+}
+
+variable "ssh_key_nodo_root" {
+  description = "Clave SSH publica del nodo Proxmox root a insertar en la maquina virtual"
   type = string
   default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMhs1jtFG37tR6YVIvY+nWC3pb+SrKK8jRiweFodIHr usertfg@VirtualTFG"
 }
