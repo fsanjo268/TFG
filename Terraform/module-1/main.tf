@@ -13,8 +13,8 @@ resource "proxmox_lxc" "demo_lab" {
   unprivileged = false
   password = var.lxc-password
   ssh_public_keys = <<-EOT
-    var.ssh_key_nodo_ansible
-    var.ssh_key_nodo_root
+    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKskyaMLTz3C97I8k1gGQLWu/oxrNfBESq241A68GCbN ansible@tfg2010
+    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlGhVOjcg+fhOQnF5UXgTfCJr2lTSRdmJO5zeDxcEbR root@tfg2010
   EOT
 
   rootfs {
