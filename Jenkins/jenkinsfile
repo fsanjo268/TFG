@@ -62,15 +62,12 @@ pipeline {
                 }
             }
         }
-        stage('Check conection Ansible') {
+        /*stage('Check conection Ansible') {
             when { expression { params.Action == 'apply'}}
             steps {
-                sh 'scp /var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible ansible@virtual.lab.inf.uva.es:/home/ansible/'
-                sh 'ssh -p 20101 ansible@virtual.lab.inf.uva.es'
-                sh 'cd ./Ansible/'
-                sh 'ansible-playbook /Playbooks/ping.yaml'
+                ansiblePlaybook installation: 'Ansible', inventory: '/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/hosts', playbook: '/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks/ping.yaml', vaultTmpPath: ''
             }
-        }
+        }*/
     }
     post {
         success {
