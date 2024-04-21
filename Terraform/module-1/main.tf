@@ -1,4 +1,4 @@
-resource "proxmox_lxc" "demo_lab" {
+resource "proxmox_lxc" "LXC_router" {
 
   hostname = "test-vm-${count.index + 1}"
   count = 1
@@ -37,7 +37,7 @@ resource "proxmox_lxc" "demo_lab" {
   
 }
 
-resource "proxmox_lxc" "demo_lab" {
+resource "proxmox_lxc" "LXC_2" {
 
   hostname = "test-vm-${count.index + 2}"
   count = 1
