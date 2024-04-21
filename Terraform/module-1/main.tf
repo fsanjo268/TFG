@@ -28,5 +28,11 @@ resource "proxmox_lxc" "demo_lab" {
     ip = "192.168.1.${count.index+100}/24"
     gw = "192.168.1.1"
   }
+  network {
+    name = "eth1"
+    bridge = "vmbr0"
+    ip = "192.168.2.${count.index+100}/24"
+    gw = "192.168.1.1"
+  }
   
 }
