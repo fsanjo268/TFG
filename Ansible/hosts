@@ -1,5 +1,25 @@
-[ubuntu]
-192.168.1.100
-[ubuntu:vars]
+[attacker]
+kali_1 192.168.1.100
+[attacker:vars]
 ansible_ssh_user:root
+
+[router]
+linux_r_1 192.168.1.101
+[router:vars]
+ansible_ssh_user:root
+
+[dmz]
+linux_1 192.168.1.102
+[dmz:vars]
+ansible_ssh_user:root
+
+[modulo-1:children]
+attacker
+router
+dmz
+
+[modulo-1]
+kali_1
+linux_1
+linux_r_1
 
