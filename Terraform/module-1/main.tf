@@ -22,21 +22,26 @@ resource "proxmox_lxc" "LXC_router" {
     size = "2G"
   }
 
+  //Node connection
   network {
     name = "eth0"
     bridge = "vmbr0"
-    ip = "192.168.1.${count.index+100}/24"
+    ip = "192.168.1.100/24"
     gw = "192.168.1.1"
   }
+
+  //Attacker network
   network {
     name = "eth1"
     bridge = "vmbr0"
-    ip = "192.168.2.${count.index+100}/24"
+    ip = "192.168.2.100/24"
   }
+
+  //DMZ Network
   network {
-    name = "eth3"
+    name = "eth2"
     bridge = "vmbr0"
-    ip = "192.168.3.${count.index+100}/24"
+    ip = "192.168.3.100/24"
   }
   
 }
@@ -64,8 +69,18 @@ resource "proxmox_lxc" "LXC_Atacante" {
     storage = "local"
     size = "2G"
   }
+
+  //Node connection
   network {
     name = "eth0"
+    bridge = "vmbr0"
+    ip = "192.168.1.101/24"
+    gw = "192.168.1.1"
+  }
+
+  //Router connection
+  network {
+    name = "eth1"
     bridge = "vmbr0"
     ip = "192.168.2.${count.index+101}/24"
     gw = "192.168.2.100"
@@ -96,8 +111,18 @@ resource "proxmox_lxc" "LXC_DMZ" {
     storage = "local"
     size = "2G"
   }
-  network {
+
+  //Node connection
+   network {
     name = "eth0"
+    bridge = "vmbr0"
+    ip = "192.168.1.102/24"
+    gw = "192.168.1.1"
+  }
+
+  //Router connnection
+  network {
+    name = "eth1"
     bridge = "vmbr0"
     ip = "192.168.3.${count.index+101}/24"
     gw = "192.168.3.100"
