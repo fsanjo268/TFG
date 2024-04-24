@@ -1,0 +1,6 @@
+- name: Configuración para el modulo 1
+  hosts: modulo-1
+
+  tasks:
+   - name: Ping
+     ping:
