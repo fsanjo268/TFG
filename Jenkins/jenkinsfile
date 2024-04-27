@@ -1,8 +1,14 @@
+def remote = [:]
+  remote.name = 'tfg2010'
+  remote.host = 'virtual.lab.inf.uva.es'
+  remote.user = 'ansible'
+  remote.port = 22
+  remote.allowAnyHosts = true
 
 pipeline {
+    
     agent any
     
-
     stages {
         stage('Clone Git`s repository') {
             steps {
@@ -33,7 +39,7 @@ pipeline {
          stage ('Ansible code validation') {
             steps {
                 dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks"){
-                    sh 'ansible-playbook --syntax-check ping.yaml'
+                    sh 'ansible-playbook --syntax-check ${params.Exercise}'
                 }
             }
         }
@@ -62,12 +68,26 @@ pipeline {
                 }
             }
         }
-        /*stage('Check conection Ansible') {
+        stage('Compressing Ansible folder') {
             when { expression { params.Action == 'apply'}}
             steps {
-                ansiblePlaybook installation: 'Ansible', inventory: '/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/hosts', playbook: '/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks/ping.yaml', vaultTmpPath: ''
+                fileOperations([fileZipOperation(folderPath: 'Ansible', outputFolderPath:'')])
+                fileOperations([fileRenameOperation(destination: "${params.NameToTransfer}.zip", source: 'Ansible.zip')])
             }
-        }*/
+        }
+        stage('SSH file transfer to Ansible Node') {
+            when { expression { params.Action == 'apply'}}
+            steps {
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'tfg2010', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'cd ./${params.NameOfTargetFolder} | unzip -o ${params.NameToTransfer}.zip | rm ${params.NameToTransfer}.zip | ls -l', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/${params.NameOfTargetFolder}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '${params.NameToTransfer}.tar.gz')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+            }
+        }
+        stage('Execute ${params.Exercise} Playbook') {
+            when { expression { params.Action == 'apply'}}
+             steps {
+                sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ | ansible-playbook module-1"
+            }
+        }
+        
     }
     post {
         success {
@@ -79,7 +99,11 @@ pipeline {
         }
         failure {
             steps {
-                sh 'terraform destroy --auto-approve'
+                script{
+                    if (params.Action == 'apply') {
+                        sh 'terraform destroy --auto-approve'
+                    }
+                }
             }
         }
     }
