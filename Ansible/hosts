@@ -1,7 +1,7 @@
 [attacker]
 kali_1 192.168.1.100
 [attacker:vars]
-ansible_ssh_user:root
+ansible_ssh_user:kali
 
 [router]
 linux_r_1 192.168.1.101

@@ -3,7 +3,7 @@ variable "Proxmox_API_Token_Secret" {
   sensitive = true
 }
 
-variable "lxc-password" {
+variable "root-password" {
   type = string
   sensitive = true
 }
@@ -34,6 +34,12 @@ variable "pm_node_name" {
   description = "nombre del nodo donde  crear la maquina virtual"
   type = string
   default = "tfg2010"
+}
+
+variable "template_name" {
+  description = "nombre de la plantilla donde clonar la maquina virtual"
+  type = string
+  default = "template-kali"
 }
 
 variable "pm_tls_insecure" {
