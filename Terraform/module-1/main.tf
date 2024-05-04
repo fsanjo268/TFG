@@ -102,43 +102,61 @@ resource "proxmox_vm_qemu" "VM_Atacante" {
   clone = var.template_name
   cores = 4
   memory = 4096
-  agent = 0
+  agent = 1
   os_type = "cloud-init"
   sockets = 1
   cpu = "host"
   scsihw = "virtio-scsi-pci"
   bootdisk = "scsi0"
-
-  disk {
+  
+  disks {
+    scsi{
+      scsi0{
+        disk{
+          size = 80
+          storage = "local"
+          iothread = false
+        }
+      }
+    }
+  }
+  /*disk {
     slot = 0
     size = "20G"
     type = "scsi"
     storage = "local"
     iothread = 1
-  }
+  }*/
 
   network {
-    model = "virio"
+    model = "virtio"
     bridge = "vmbr0"
   }
 
-lifecycle {
-  ignore_changes = [ 
-    network,
-   ]
-}
+  /*network {
+    model = "virtio"
+    bridge = "vmbr0"
+  }*/
+
+  lifecycle {
+    ignore_changes = [ 
+      network,
+    ]
+  }
+  cloudinit_cdrom_storage = "local"
+  boot = "order=scsi0;ide2;net0"
 
   //Node connection
-  ipconfig0 = "ip = 192.168.1.101/24, gw = 192.168.1.1"
+  ipconfig0 = "ip=192.168.1.101/24,gw=192.168.1.1"
   //Router connection
-  ipconfig1 = "ip = 192.168.2.101/24, gw = 192.168.2.100"
+  //ipconfig1 = "ip = 192.168.2.101/24, gw = 192.168.2.100"
   //DNS
   searchdomain = "10.0.0.250"
   nameserver = "10.0.0.250"
 
   sshkeys = <<EOF
-  ${var.ssh_key_nodo_ansible}
-  ${var.ssh_key_nodo_root}
+  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKskyaMLTz3C97I8k1gGQLWu/oxrNfBESq241A68GCbN ansible@tfg2010
+  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlGhVOjcg+fhOQnF5UXgTfCJr2lTSRdmJO5zeDxcEbR root@tfg2010
   EOF
 }
 
