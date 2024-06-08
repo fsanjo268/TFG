@@ -9,6 +9,7 @@ resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
 
     agent {
         enabled = true
+        timeout = "20m"
     }
 
     memory {
@@ -75,7 +76,7 @@ resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
     scsi_hardware = "virtio-scsi-single"
     keyboard_layout="es"
 
-    timeout_clone = 3000
+    timeout_clone = 3600
     timeout_create = 3000
 }
 
@@ -87,7 +88,10 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_DMZ" {
   node_name = "tfg2010"
   vm_id =300
   started = true
-  unprivileged = false
+  unprivileged = true
+  features {
+    nesting = true
+  }
 
   operating_system {
     template_file_id = "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
@@ -114,7 +118,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_DMZ" {
 
   disk {
     datastore_id = "local"
-    size = 10
+    size = 15
   }
 
   initialization {
@@ -159,7 +163,10 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
   node_name = "tfg2010"
   vm_id =100
   started = true
-  unprivileged = false
+  unprivileged = true
+  features {
+    nesting = true
+  }
   
   operating_system {
     template_file_id = "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
@@ -191,7 +198,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
 
   disk {
     datastore_id = "local"
-    size = 10
+    size = 15
   }
 
   initialization {
