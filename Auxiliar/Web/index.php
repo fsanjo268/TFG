@@ -5,7 +5,7 @@ session_start();
 
 <?php
 
-$page = $_GET['page'];
+$page = @$_GET['page'];
 if ($_GET['page']==null){
     include('home.php');
 }else{
