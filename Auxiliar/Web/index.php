@@ -5,12 +5,10 @@ session_start();
 
 <?php
 
-$page = @$_GET['page'];
-if ($_GET['page']==null){
-    include('home.php');
-}else{
+$page = isset($_GET['page'])? _GET['page'] : "home.php";
+
 include($page);
-}
+
 ?>
 
 <?php include('footer.php'); ?>

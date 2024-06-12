@@ -12,7 +12,7 @@
         <p><strong>Contacto:</strong> clopez@securelyinsecure.com</p>
     </div>
     <div class="employee-card">
-        <h3>Maria Santos/h3>
+        <h3>Maria Santos</h3>
         <p><strong>Cargo:</strong> Administradora de Base de Datos</p>
         <p><strong>Contacto:</strong> msantos@securelyinsecure.com</p>
     </div>
