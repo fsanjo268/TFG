@@ -1,11 +1,11 @@
--- Crear base de datos
-CREATE DATABASE intranet;
-
--- Usar la base de datos
-USE intranet;
-
 -- Usar la base de datos intranet
 USE intranet;
+-- DROP TABLES
+DROP TABLE IF EXISTS usuarios ;
+DROP TABLE IF EXISTS departamentos ;
+DROP TABLE IF EXISTS clientes ;
+DROP TABLE IF EXISTS politicas ;
+DROP TABLE IF EXISTS eventos ;
 
 -- Crear tabla departamentos
 CREATE TABLE departamentos (
@@ -23,8 +23,9 @@ CREATE TABLE usuarios (
     cargo VARCHAR(100) NOT NULL,
     contacto VARCHAR(100) NOT NULL,
     departamento_id INT,
-    nombre_usuario VARCHAR(50) NOT NULL, -- Nueva columna para el nombre de usuario
-    contrasena VARCHAR(32) NOT NULL, -- Nueva columna para la contraseña (hash)
+    nombre_usuario VARCHAR(50) NOT NULL,
+    contrasena VARCHAR(32) NOT NULL,
+    sudo ENUM('Si', 'No') NOT NULL
     FOREIGN KEY (departamento_id) REFERENCES departamentos(id)
 );
 
@@ -42,9 +43,8 @@ CREATE TABLE politicas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     codigo VARCHAR(10) NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT NOT NULL,
     fecha_vigencia DATE NOT NULL,
-    estado ENUM('Activa', 'Inactiva') NOT NULL,
+    estado ENUM('Activa', 'Inactiva') NOT NULL
 );
 
 -- Crear tabla eventos
@@ -55,6 +55,7 @@ CREATE TABLE eventos (
     descripcion TEXT NOT NULL
 );
 
+
 -- Insertar datos en la tabla departamentos
 INSERT INTO departamentos (nombre, correo, telefono) VALUES
 ('IT', 'it@securelyinsecure.com', '+34 123 456 789'),
@@ -62,33 +63,34 @@ INSERT INTO departamentos (nombre, correo, telefono) VALUES
 ('Recursos Humanos', 'rrhh@securelyinsecure.com', '+34 555 123 456');
 
 -- Insertar datos en la tabla usuarios
-INSERT INTO usuarios (nombre, cargo, contacto, departamento_id, nombre_usuario, contrasena) VALUES
-('Javier Gómez', 'Gerente de Infraestructura de IT', 'mgomez@securelyinsecure.com', 1, 'mgomez', MD5('password')),
-('Carlos López', 'Administrador de Redes', 'clopez@securelyinsecure.com', 1, 'clopez', MD5('password')),
-('Maria Santos', 'Administradora de Base de Datos', 'msantos@securelyinsecure.com', 1, 'msantos', MD5('password')),
-('Ana Ruiz', 'Directora de Tecnología', 'aruiz@securelyinsecure.com', 1, 'aruiz', MD5('password')),
-('Sebastián Martín', 'Becario RR.HH', 'smartin@securelyinsecure.com', 3, 'smartin', MD5('password')),
-('Laura Manrique', 'Gerente de Recursos Humanos', 'lmanrique@securelyinsecure.com', 3, 'lmanrique', MD5('password')),
-('Mario Osorio', 'Director de Seguridad de la Información', 'mosorio@securelyinsecure.com', 2, 'mosorio', MD5('password')),
-('Sara Rosas', 'Analista de Vulnerabilidades', 'srosas@securelyinsecure.com', 2, 'srosas', MD5('password')),
-('Francisco Cañedas', 'Auditor de Seguridad', 'fcanedas@securelyinsecure.com', 2, 'fcanedas', MD5('password')),
-('Paula Samaniego', 'Especialista en Respuesta a Incidentes', 'psamaniego@securelyinsecure.com', 2, 'psamaniego', MD5('password'));
+INSERT INTO usuarios (nombre, cargo, contacto, departamento_id, nombre_usuario, contrasena, sudo) VALUES
+('Javier Gomez', 'Gerente de Infraestructura de IT', 'jgomez@securelyinsecure.com', 1, 'mgomez', MD5('S3cur3Pa22wd124'), 'Si'),
+('Carlos Lopez', 'Administrador de Redes', 'clopez@securelyinsecure.com', 1, 'clopez', MD5('Tr$8jKl9'), 'No'),
+('Maria Santos', 'Administradora de Base de Datos', 'msantos@securelyinsecure.com', 1, 'msantos', MD5('Qw3#tYu1'), 'No'),
+('Ana Ruiz', 'Directora de Tecnologia', 'aruiz@securelyinsecure.com', 1, 'aruiz', MD5('password'), 'No'),
+('Sebastian Martin', 'Becario RR.HH', 'smartin@securelyinsecure.com', 3, 'smartin', MD5('Zn3!LmN7'), 'No'),
+('Laura Manrique', 'Gerente de Recursos Humanos', 'lmanrique@securelyinsecure.com', 3, 'lmanrique', MD5('Pw8$gHk3'), 'No'),
+('Mario Osorio', 'Director de Seguridad de la Informacion', 'mosorio@securelyinsecure.com', 2, 'mosorio', MD5('Nv5#Ju9K'), 'No'),
+('Sara Rosas', 'Analista de Vulnerabilidades', 'srosas@securelyinsecure.com', 2, 'srosas', MD5('Wx7*Ku8J'), 'No'),
+('Francisco Ramos', 'Auditor de Seguridad', 'framos@securelyinsecure.com', 2, 'framos', MD5('Tf4&Vr6Z'), 'No'),
+('Paula Samaniego', 'Especialista en Respuesta a Incidentes', 'psamaniego@securelyinsecure.com', 2, 'psamaniego', MD5('Yt9%Lp5B'), 'No');
+
 
 
 -- Insertar datos en la tabla clientes
 INSERT INTO clientes (nombre, correo, telefono, direccion) VALUES
-('Cliente A', 'cliente.a@example.com', '555-0001', 'Dirección Cliente A'),
-('Cliente B', 'cliente.b@example.com', '555-0002', 'Dirección Cliente B'),
-('Cliente C', 'cliente.c@example.com', '555-0003', 'Dirección Cliente C');
+('Pedro Fernandez', 'pedro.fernandez@gmail.com', '555-1234', 'Calle Mayor 10, Madrid'),
+('Lucia Gonzalez', 'lucia.gonzalez@gmail.com', '555-5678', 'Avenida de la Constitucion 20, Sevilla'),
+('Juan Martinez', 'juan.martinez@gmail.com', '555-9101', 'Calle Gran Via 30, Barcelona');
 
 -- Insertar datos en la tabla politicas
-INSERT INTO politicas (codigo, nombre, descripcion, fecha_vigencia, estado, responsable) VALUES
-('SEC001', 'Política de Seguridad', 'Descripción de la política de seguridad.', '2024-01-01', 'Activa'),
-('PRI001', 'Política de Privacidad', 'Descripción de la política de privacidad.', '2024-01-01', 'Activa'),
-('RET001', 'Política de Retención de Datos', 'Descripción de la política de retención de datos.', '2023-06-01', 'Inactiva'),
-('USO001', 'Política de Uso Aceptable', 'Descripción de la política de uso aceptable.', '2024-01-01', 'Activa');
+INSERT INTO politicas (codigo, nombre, fecha_vigencia, estado) VALUES
+('SEC001', 'Politica de Seguridad', '2024-01-01', 'Activa'),
+('PRI001', 'Politica de Privacidad', '2024-01-01', 'Activa'),
+('RET001', 'Politica de Retencion de Datos', '2023-06-01', 'Inactiva'),
+('USO001', 'Politica de Uso Aceptable', '2024-01-01', 'Activa');
 
 -- Insertar datos en la tabla eventos
 INSERT INTO eventos (nombre, fecha, descripcion) VALUES
-('Evento de Lanzamiento', '2024-07-01 10:00:00', 'Descripción del evento de lanzamiento.'),
-('Conferencia Anual', '2024-09-15 09:00:00', 'Descripción de la conferencia anual.');
+('Evento de Lanzamiento', '2024-07-01 10:00:00', 'Lanzamiento del nuevo prodcuto.'),
+('Conferencia Anual', '2024-09-15 09:00:00', 'Feria de promocion.');
