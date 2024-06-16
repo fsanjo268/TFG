@@ -1,7 +1,6 @@
 resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
     
-    count = 1
-    name = "kali-${count.index+1}"
+    name = "kali-1"
     node_name = "tfg2010"
     //New VM id to set
     vm_id = 200
@@ -13,7 +12,7 @@ resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
     }
 
     memory {
-        dedicated = 4096
+        dedicated = 8192
     }
 
     clone {
@@ -84,7 +83,6 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_DMZ" {
   
   depends_on = [ proxmox_virtual_environment_vm.VM_Kali_Attacker ]
 
-  count = 1
   node_name = "tfg2010"
   vm_id =300
   started = true
@@ -103,7 +101,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_DMZ" {
   }
 
   memory {
-    dedicated = 512
+    dedicated = 1024
   }
 
   network_interface {
@@ -159,7 +157,6 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
   
   depends_on = [ proxmox_virtual_environment_vm.VM_Kali_Attacker ]
 
-  count = 1
   node_name = "tfg2010"
   vm_id =100
   started = true

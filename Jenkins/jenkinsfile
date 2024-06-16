@@ -58,11 +58,13 @@ pipeline {
         stage('Apply / Destroy') {
             steps {
                 dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
-                    script {
-                        if (params.Action == 'apply') {
-                            sh 'terraform apply -input=false tfplan'
-                        } else if (params.Action == 'destroy') {
-                            sh 'terraform destroy --auto-approve'
+                    retry(4){
+                        script {
+                            if (params.Action == 'apply') {
+                                sh 'terraform apply -input=false tfplan'
+                            } else if (params.Action == 'destroy') {
+                                sh 'terraform destroy --auto-approve'
+                            }
                         }
                     }
                 }
@@ -84,7 +86,9 @@ pipeline {
         stage('Execute ${params.Exercise} Playbook') {
             when { expression { params.Action == 'apply'}}
              steps {
-                sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ | ansible-playbook module-1"
+                retry(4){
+                    sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ | ansible-playbook module-1"
+                }
             }
         }
         
