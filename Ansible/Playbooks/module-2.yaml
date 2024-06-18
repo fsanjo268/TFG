@@ -1,0 +1,261 @@
+# Playbook kali
+- name: Configuracion de resolv.conf Kali Linux
+  hosts: kali
+  become: true
+  tasks:
+    - name: Crear /etc/resolv.conf y agregar nameserver
+      copy:
+        dest: /etc/resolv.conf
+        content: |
+          nameserver 10.0.0.250
+        owner: root
+        group: root
+        mode: '0644'
+# Playbook router
+- name: Configuracion de ip_forward e iptables en Router
+  hosts: router
+  become: true
+  tasks:
+    - name: Crear usuario ADMusuario con permisos de sudo
+      user:
+        name: ADMusuario
+        groups: sudo
+        append: yes
+        state: present
+        password: "passwd1234"
+        shell: /bin/bash
+        
+    - name: Habilitar el reenvio de IP en /proc/sys/net/ipv4/ip_forward
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
+
+    - name: Asegurarse de que el reenvio de IP sea persistente
+      lineinfile:
+        dest: /etc/sysctl.conf
+        regexp: '^net.ipv4.ip_forward'
+        line: 'net.ipv4.ip_forward = 1'
+        state: present
+
+    - name: Instalar iptables-persistent
+      apt:
+        name: iptables-persistent
+        state: present
+        
+    - name: Permitir trafico en el puerto 22 
+      iptables: 
+        table: filter 
+        chain: INPUT 
+        protocol: tcp 
+        destination_port: 22 
+        jump: ACCEPT
+        
+    - name: Agregar regla de iptables de manera persistente
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: eth0
+        jump: MASQUERADE
+
+    - name: Guardar reglas de iptables en /etc/iptables/rules.v4
+      become: true
+      shell: iptables-save > /etc/iptables/rules.v4
+# Playbook intranet mysql
+- name: Configurar servidor MySQL e importar archivos SQL
+  hosts: LXC-ub-in-2
+  become: true
+  tasks:
+  
+    - name: Actualizar paquetes del sistema
+      apt:
+        upgrade: dist
+        state: latest
+        update_cache: true
+        
+    - name: Instalar servicios
+      apt:
+        name: 
+          - git
+          - python3-pip
+          - iptables-persistent
+          - mysql-server
+        state: present
+        
+    - name: Clone the GitHub repository
+      git:
+        repo: "https://github.com/fsanjo268/TFG.git"
+        dest: /srv/files
+
+    - name: Instalar PyMySQL
+      pip:
+        name: PyMySQL
+        
+    - name: Configurar interprete de Python para Ansible
+      set_fact:
+        ansible_python_interpreter: /usr/bin/python3
+        
+    - name: Permitir trafico en el puerto 3306 
+      iptables: 
+        table: filter 
+        chain: INPUT 
+        protocol: tcp 
+        destination_port: 3306 
+        jump: ACCEPT
+        
+    - name: Permitir trafico en el puerto 22 
+      iptables: 
+        table: filter 
+        chain: INPUT 
+        protocol: tcp 
+        destination_port: 22 
+        jump: ACCEPT
+        
+    - name: Guardar reglas de iptables en /etc/iptables/rules.v4
+      become: true
+      shell: iptables-save > /etc/iptables/rules.v4
+      
+    - name: Configurar MySQL para aceptar conexiones remotas 
+      ansible.builtin.lineinfile: 
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf 
+        regexp: '^bind-address' 
+        line: 'bind-address = 0.0.0.0' 
+
+    - name: Reiniciar servicio MySQL
+      service:
+       name: mysql
+       state: restarted
+
+    - name: Eliminar fichero cnf
+      ansible.builtin.file:
+       path: /root/.my.cnf
+       state: absent
+
+    - name: Almacenar clave root en .my.cnf
+      lineinfile:
+         dest: /root/.my.cnf
+         line: |
+          [client]
+          user=root
+          password=rootAdminPassword
+         create: yes
+         owner: root
+         group: root
+         mode: '0600'
+
+    - name: Crear base de datos 'intranet'
+      mysql_db:
+        name: intranet
+        state: present
+        login_user: root
+        login_password: "rootAdminPassword"
+
+    - name: Importar archivo SQL para poblar la base de datos
+      mysql_db:
+        name: intranet
+        state: import
+        target: /srv/files/Auxiliar/MySQL/poblacion.sql
+        login_user: root
+        login_password: "rootAdminPassword"
+      become: true
+
+    - name: Importar archivo SQL para usuarios
+      mysql_db:
+        name: intranet
+        state: import
+        target: /srv/files/Auxiliar/MySQL/usuarios.sql
+        login_user: root
+        login_password: "rootAdminPassword"
+      become: true
+# Playbook intranet WEB
+- name: Configurar Web VM con Apache
+  hosts: LXC-ub-in-1
+  become: true
+  tasks:
+    - name: Actualizar paquetes del sistema
+      apt:
+        upgrade: dist
+        state: latest
+        update_cache: true
+
+    - name: Instalar servicios
+      apt:
+        name:
+          - apache2
+          - php
+          - iptables-persistent
+          - git
+        state: present
+        
+    - name: Clonar repositorio GitHub
+      git:
+        repo: https://github.com/fsanjo268/TFG.git
+        dest: /srv/files
+        
+    - name: Crear usuario Carlos Lopez
+      user:
+        name: clopez
+        state: present
+        password: "Tr$8jKl9"
+        shell: /bin/bash
+
+    - name: Crear usuario Maria Santos
+      user:
+        name: msantos
+        state: present
+        password: "Qw3#tYu1"
+        shell: /bin/bash
+    
+    - name: Crear usuario con permisos de sudo Javier Gomez 
+      user:
+        name: jgomez
+        groups: sudo
+        append: yes
+        state: present
+        password: "password1"
+        shell: /bin/bash
+    
+    - name: Permitir acceso a nano para Javier Gomez sin clave
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^jgomez'
+        line: 'jgomez ALL=(ALL:ALL) NOPASSWD: /usr/bin/nano'
+        
+    - name: Permitir trafico en el puerto 80 
+      iptables: 
+       table: filter
+       chain: INPUT 
+       protocol: tcp 
+       destination_port: 80 
+       jump: ACCEPT
+        
+    - name: Permitir trafico en el puerto 22 
+      iptables: 
+        table: filter 
+        chain: INPUT 
+        protocol: tcp 
+        destination_port: 22 
+        jump: ACCEPT
+        
+    - name: Guardar reglas de iptables en /etc/iptables/rules.v4
+      become: true
+      shell: iptables-save > /etc/iptables/rules.v4
+       
+    - name: Asegurar /var/www/html es propiedad de www-data
+      file:
+        path: /var/www/html
+        owner: www-data
+        group: www-data
+        state: directory
+        recurse: yes
+
+    - name: Copiar ficheros de /srv/files/Auxiliar/web a /var/www/html
+      copy:
+        src: /srv/files/Auxiliar/web/
+        dest: /var/www/html/
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        remote_src: yes

@@ -4,7 +4,10 @@ resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
     node_name = "tfg2010"
     //New VM id to set
     vm_id = 200
-    
+    scsi_hardware = "virtio-scsi-single"
+
+    timeout_clone = 3600
+    timeout_create = 3000
 
     agent {
         enabled = true
@@ -71,12 +74,6 @@ resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
     network_device{
         bridge = "vmbr0"
     }
-
-    scsi_hardware = "virtio-scsi-single"
-    keyboard_layout="es"
-
-    timeout_clone = 3600
-    timeout_create = 3000
 }
 
 resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
@@ -91,6 +88,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
   features {
     nesting = true
   }
+  timeout_create = 3000
 
   operating_system {
     template_file_id = "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
@@ -150,8 +148,6 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
         password=var.root-password
     }
   }
-
-  timeout_create = 3000
 }
 
 resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
@@ -162,7 +158,8 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
   vm_id =100
   started = true
   unprivileged = false
-  
+  timeout_create = 3000
+
   operating_system {
     template_file_id = "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
     type = "ubuntu"
@@ -221,6 +218,4 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
         password=var.root-password
     }
   }
-
-  timeout_create = 3000
 }

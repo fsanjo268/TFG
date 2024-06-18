@@ -58,13 +58,11 @@ pipeline {
         stage('Apply / Destroy') {
             steps {
                 dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
-                    retry(4){
-                        script {
-                            if (params.Action == 'apply') {
-                                sh 'terraform apply -input=false tfplan'
-                            } else if (params.Action == 'destroy') {
-                                sh 'terraform destroy --auto-approve'
-                            }
+                    script {
+                        if (params.Action == 'apply') {
+                            sh 'terraform apply -input=false tfplan'
+                        } else if (params.Action == 'destroy') {
+                            sh 'terraform destroy --auto-approve'
                         }
                     }
                 }

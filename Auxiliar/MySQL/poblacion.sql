@@ -64,7 +64,7 @@ INSERT INTO departamentos (nombre, correo, telefono) VALUES
 
 -- Insertar datos en la tabla usuarios
 INSERT INTO usuarios (nombre, cargo, contacto, departamento_id, nombre_usuario, contrasena, sudo) VALUES
-('Javier Gomez', 'Gerente de Infraestructura de IT', 'jgomez@securelyinsecure.com', 1, 'mgomez', MD5('S3cur3Pa22wd124'), 'Si'),
+('Javier Gomez', 'Gerente de Infraestructura de IT', 'jgomez@securelyinsecure.com', 1, 'mgomez', MD5('password1'), 'Si'),
 ('Carlos Lopez', 'Administrador de Redes', 'clopez@securelyinsecure.com', 1, 'clopez', MD5('Tr$8jKl9'), 'No'),
 ('Maria Santos', 'Administradora de Base de Datos', 'msantos@securelyinsecure.com', 1, 'msantos', MD5('Qw3#tYu1'), 'No'),
 ('Ana Ruiz', 'Directora de Tecnologia', 'aruiz@securelyinsecure.com', 1, 'aruiz', MD5('password'), 'No'),

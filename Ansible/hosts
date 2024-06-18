@@ -1,25 +1,15 @@
-[attacker]
-kali_1 192.168.1.100
-[attacker:vars]
-ansible_ssh_user:kali
-
 [router]
-linux_r_1 192.168.1.101
+LXC_ub_ro_1 ansible_host=192.168.1.100
 [router:vars]
-ansible_ssh_user:root
+ansible_ssh_user=root
 
-[dmz]
-linux_1 192.168.1.102
-[dmz:vars]
-ansible_ssh_user:root
+[kali]
+QEMU_Kali_1 ansible_host=192.168.1.101
+[Kali:vars]
+ansible_ssh_user=Kali
 
-[modulo-1:children]
-attacker
-router
-dmz
-
-[modulo-1]
-kali_1
-linux_1
-linux_r_1
-
+[intranet]
+LXC_ub_in_1 ansible_host=192.168.1.102
+LXC_ub_in_2 ansible_host=192.168.1.103
+[intranet:vars]
+ansible_ssh_user=root
