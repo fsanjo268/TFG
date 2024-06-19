@@ -78,15 +78,13 @@ pipeline {
         stage('SSH file transfer to Ansible Node') {
             when { expression { params.Action == 'apply'}}
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'tfg2010', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'cd ./${params.NameOfTargetFolder} | unzip -o ${params.NameToTransfer}.zip | rm ${params.NameToTransfer}.zip | ls -l', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/${params.NameOfTargetFolder}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '${params.NameToTransfer}.tar.gz')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'tfg2010', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'cd ./${params.NameOfTargetFolder} ; unzip -o ${params.NameToTransfer}.zip ; rm ${params.NameToTransfer}.zip ; ls -l', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/${params.NameOfTargetFolder}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '${params.NameToTransfer}.zip')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
             }
         }
         stage('Execute ${params.Exercise} Playbook') {
             when { expression { params.Action == 'apply'}}
-             steps {
-                retry(4){
-                    sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ | ansible-playbook module-1"
-                }
+            retry(4){
+                sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ ; ansible-playbook ${params.Exercise}"
             }
         }
         
