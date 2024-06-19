@@ -38,8 +38,8 @@ pipeline {
         }
          stage ('Ansible code validation') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks"){
-                    sh 'ansible-playbook --syntax-check ${params.Exercise}'
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks/"){
+                    sh 'ansible-playbook --syntax-check ${params.Exercise}.yaml'
                 }
             }
         }
@@ -85,7 +85,7 @@ pipeline {
             when { expression { params.Action == 'apply'}}
             steps{
                 retry(4){
-                    sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ ; ansible-playbook ${params.Exercise}"
+                    sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ ; ansible-playbook ${params.Exercise}.yaml"
                 }
             }
         }
