@@ -1,6 +1,6 @@
 resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
     
-    name = "kali-1"
+    name = "QEMU-kali-1"
     node_name = "tfg2010"
     //New VM id to set
     vm_id = 200

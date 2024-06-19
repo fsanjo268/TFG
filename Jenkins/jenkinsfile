@@ -83,8 +83,10 @@ pipeline {
         }
         stage('Execute ${params.Exercise} Playbook') {
             when { expression { params.Action == 'apply'}}
-            retry(4){
-                sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ ; ansible-playbook ${params.Exercise}"
+            steps{
+                retry(4){
+                    sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ ; ansible-playbook ${params.Exercise}"
+                }
             }
         }
         

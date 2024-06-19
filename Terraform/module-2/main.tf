@@ -1,6 +1,6 @@
 resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
     
-    name = "kali-1"
+    name = "QEMU-kali-1"
     node_name = "tfg2010"
     //New VM id to set
     vm_id = 200
@@ -125,7 +125,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
       servers = ["10.0.0.250"]
     }
 
-    hostname = "LXC-ubuntu-intranet-${count.index+1}"
+    hostname = "LXC-ub-in-${count.index+1}"
 
     //Node Networkk
     ip_config {
@@ -195,7 +195,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
       servers = ["10.0.0.250"]
     }
 
-    hostname = "LXC-ubuntu-router-${count.index+1}"
+    hostname = "LXC-ub-ro-1"
 
     //Node Networkk
     ip_config {
