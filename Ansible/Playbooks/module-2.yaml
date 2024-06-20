@@ -22,7 +22,7 @@
         groups: sudo
         append: yes
         state: present
-        password: "passwd1234"
+        password: "{{ 'passwd1234' | password_hash('md5') }}"
         shell: /bin/bash
         
     - name: Habilitar el reenvio de IP en /proc/sys/net/ipv4/ip_forward
@@ -62,7 +62,9 @@
     - name: Guardar reglas de iptables en /etc/iptables/rules.v4
       become: true
       shell: iptables-save > /etc/iptables/rules.v4
+
 # Playbook intranet mysql
+
 - name: Configurar servidor MySQL e importar archivos SQL
   hosts: LXC-ub-in-2
   become: true
@@ -148,6 +150,7 @@
       mysql_db:
         name: intranet
         state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
         login_user: root
         login_password: "rootAdminPassword"
 
@@ -156,6 +159,7 @@
         name: intranet
         state: import
         target: /srv/files/Auxiliar/MySQL/poblacion.sql
+        login_unix_socket: /run/mysqld/mysqld.sock
         login_user: root
         login_password: "rootAdminPassword"
       become: true
@@ -165,10 +169,13 @@
         name: intranet
         state: import
         target: /srv/files/Auxiliar/MySQL/usuarios.sql
+        login_unix_socket: /run/mysqld/mysqld.sock
         login_user: root
         login_password: "rootAdminPassword"
       become: true
+
 # Playbook intranet WEB
+
 - name: Configurar Web VM con Apache
   hosts: LXC-ub-in-1
   become: true
@@ -197,14 +204,14 @@
       user:
         name: clopez
         state: present
-        password: "Tr$8jKl9"
+        password: "{{ 'Tr$8jKl9' | password_hash('md5') }}"
         shell: /bin/bash
 
     - name: Crear usuario Maria Santos
       user:
         name: msantos
         state: present
-        password: "Qw3#tYu1"
+        password: "{{ 'Qw3#tYu1' | password_hash('md5') }}"
         shell: /bin/bash
     
     - name: Crear usuario con permisos de sudo Javier Gomez 
@@ -213,7 +220,7 @@
         groups: sudo
         append: yes
         state: present
-        password: "password1"
+        password: "{{ 'password1' | password_hash('md5') }}"
         shell: /bin/bash
     
     - name: Permitir acceso a nano para Javier Gomez sin clave
