@@ -1,15 +1,15 @@
 [router]
-LXC_ub_ro_1 ansible_host=192.168.1.100
+LXC-ub-ro-1 ansible_host=192.168.1.100
 [router:vars]
 ansible_ssh_user=root
 
 [kali]
-QEMU_Kali_1 ansible_host=192.168.1.101
-[Kali:vars]
+QEMU-Kali-1 ansible_host=192.168.1.101
+[kali:vars]
 ansible_ssh_user=kali
 
 [intranet]
-LXC_ub_in_1 ansible_host=192.168.1.102
-LXC_ub_in_2 ansible_host=192.168.1.103
+LXC-ub-in-1 ansible_host=192.168.1.102
+LXC-ub-in-2 ansible_host=192.168.1.103
 [intranet:vars]
 ansible_ssh_user=root

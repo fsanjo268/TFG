@@ -130,7 +130,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
     //Node Networkk
     ip_config {
       ipv4 {
-        address = "192.168.1.10${count.index+1}/24"
+        address = "192.168.1.10${(count.index+3)-1}/24"
         gateway = "192.168.1.1"
       }
     }
