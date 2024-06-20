@@ -70,12 +70,12 @@
   become: true
   tasks:
   
-    - name: Actualizar paquetes del sistema
-      apt:
-        upgrade: dist
-        state: latest
-        update_cache: true
-      ignore_errors: yes
+#    - name: Actualizar paquetes del sistema
+#      apt:
+#        upgrade: dist
+#       state: latest
+#       update_cache: true
+#     ignore_errors: yes
       
     - name: Instalar servicios
       apt:
@@ -181,12 +181,12 @@
   hosts: LXC-ub-in-1
   become: true
   tasks:
-    - name: Actualizar paquetes del sistema
-      apt:
-        upgrade: dist
-        state: latest
-        update_cache: true
-      ignore_errors: yes
+#   - name: Actualizar paquetes del sistema
+#     apt:
+#      upgrade: dist
+#      state: latest
+#      update_cache: true
+#     ignore_errors: yes
 
     - name: Instalar servicios
       apt:
