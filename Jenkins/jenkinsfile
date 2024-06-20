@@ -2,7 +2,8 @@ def remote = [:]
   remote.name = 'tfg2010'
   remote.host = 'virtual.lab.inf.uva.es'
   remote.user = 'ansible'
-  remote.port = 22
+  remote-password = 'ansible'
+  remote.port = 20101
   remote.allowAnyHosts = true
 
 pipeline {
