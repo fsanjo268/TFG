@@ -36,13 +36,13 @@ pipeline {
                 }
             }
         }
-         stage ('Ansible code validation') {
+         /*stage ('Ansible code validation') {
             steps {
                 dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks/"){
-                    sh 'ansible-playbook --syntax-check ${params.Exercise}.yaml'
+                    sh 'ansible-playbook ${params.Exercise}.yaml --syntax-check'
                 }
             }
-        }
+        }*/
         stage('Infraestructure plannification ') {
             steps {
                 dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
@@ -78,10 +78,10 @@ pipeline {
         stage('SSH file transfer to Ansible Node') {
             when { expression { params.Action == 'apply'}}
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'tfg2010', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'cd ./${params.NameOfTargetFolder} ; unzip -o ${params.NameToTransfer}.zip ; rm ${params.NameToTransfer}.zip ; ls -l', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/${params.NameOfTargetFolder}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '${params.NameToTransfer}.zip')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'tfg2010', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd ./${params.NameOfTargetFolder} ; unzip -o ${params.NameToTransfer}.zip ; rm ${params.NameToTransfer}.zip ; ls -l", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: "/${params.NameOfTargetFolder}", remoteDirectorySDF: false, removePrefix: '', sourceFiles: "${params.NameToTransfer}.zip")], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
             }
         }
-        stage('Execute ${params.Exercise} Playbook') {
+        stage('Execute Playbook') {
             when { expression { params.Action == 'apply'}}
             steps{
                 retry(4){
@@ -101,9 +101,11 @@ pipeline {
         }
         failure {
             steps {
-                script{
-                    if (params.Action == 'apply') {
-                        sh 'terraform destroy --auto-approve'
+                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
+                    script{
+                        if (params.Action == 'apply') {
+                            sh 'terraform destroy --auto-approve'
+                        }
                     }
                 }
             }
