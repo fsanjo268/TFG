@@ -75,7 +75,8 @@
         upgrade: dist
         state: latest
         update_cache: true
-        
+      ignore_errors: yes
+      
     - name: Instalar servicios
       apt:
         name: 
@@ -185,6 +186,7 @@
         upgrade: dist
         state: latest
         update_cache: true
+      ignore_errors: yes
 
     - name: Instalar servicios
       apt:
@@ -258,9 +260,9 @@
         state: directory
         recurse: yes
 
-    - name: Copiar ficheros de /srv/files/Auxiliar/web a /var/www/html
+    - name: Copiar ficheros de /srv/files/Auxiliar/Web a /var/www/html
       copy:
-        src: /srv/files/Auxiliar/web/
+        src: /srv/files/Auxiliar/Web/
         dest: /var/www/html/
         owner: www-data
         group: www-data
