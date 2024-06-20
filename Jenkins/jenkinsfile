@@ -2,7 +2,6 @@ def remote = [:]
   remote.name = 'tfg2010'
   remote.host = 'virtual.lab.inf.uva.es'
   remote.user = 'ansible'
-  remote-password = 'ansible'
   remote.port = 20101
   remote.allowAnyHosts = true
 
@@ -13,11 +12,12 @@ pipeline {
     stages {
         stage('Clone Git`s repository') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios"){
+                dir("/var/lib/jenkins/workspace/TFG/Deploy_enviroment"){
                     script{
                         if (params.Action == 'apply') {
                             cleanWs()
-                            git url: 'https://github.com/fsanjo268/TFG.git', branch: 'main' 
+                            git url: 'https://github.com/fsanjo268/TFG.git', branch: 'main'
+                            sh 'ls -l'
                         }
                     }
                 }
@@ -25,28 +25,28 @@ pipeline {
         }
          stage('Terraform init') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
+                dir("/var/lib/jenkins/workspace/TFG/Deploy_enviroment/Terraform/${params.Exercise}"){
                     sh 'terraform init'
                 }
             }
         }
          stage('Terraform code validation') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
+                dir("/var/lib/jenkins/workspace/TFG/Deploy_enviroment/Terraform/${params.Exercise}"){
                     sh 'terraform validate'
                 }
             }
         }
-         /*stage ('Ansible code validation') {
+         stage ('Ansible code validation') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Ansible/Playbooks/"){
-                    sh 'ansible-playbook ${params.Exercise}.yaml --syntax-check'
+                dir("/var/lib/jenkins/workspace/TFG/Deploy_enviroment/Ansible/"){
+                    sh "ansible-playbook ./Playbooks/${params.Exercise}.yaml --syntax-check"
                 }
             }
-        }*/
+        }
         stage('Infraestructure plannification ') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
+                dir("/var/lib/jenkins/workspace/TFG/Deploy_enviroment/Terraform/${params.Exercise}"){
                      script{
                         if (params.Action == 'apply') {
                             sh 'terraform plan -out tfplan'      
@@ -58,7 +58,7 @@ pipeline {
         
         stage('Apply / Destroy') {
             steps {
-                dir("/var/lib/jenkins/workspace/TFG/Despliegue_ejercicios/Terraform/${params.Exercise}"){
+                dir("/var/lib/jenkins/workspace/TFG/Deploy_enviroment/Terraform/${params.Exercise}"){
                     script {
                         if (params.Action == 'apply') {
                             sh 'terraform apply -input=false tfplan'
@@ -79,14 +79,19 @@ pipeline {
         stage('SSH file transfer to Ansible Node') {
             when { expression { params.Action == 'apply'}}
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'tfg2010', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd ./${params.NameOfTargetFolder} ; unzip -o ${params.NameToTransfer}.zip ; rm ${params.NameToTransfer}.zip ; ls -l", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: "/${params.NameOfTargetFolder}", remoteDirectorySDF: false, removePrefix: '', sourceFiles: "${params.NameToTransfer}.zip")], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'tfg2010', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd ./${params.NameOfTargetFolder} ; ls -l ; unzip -o ${params.NameToTransfer}.zip ; rm ${params.NameToTransfer}.zip ; ls -l", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: "/${params.NameOfTargetFolder}", remoteDirectorySDF: false, removePrefix: '', sourceFiles: "${params.NameToTransfer}.zip")], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
             }
         }
         stage('Execute Playbook') {
             when { expression { params.Action == 'apply'}}
             steps{
                 retry(4){
-                    sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/Playbooks/ ; ansible-playbook ${params.Exercise}.yaml"
+                    script{
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-Jenkins', keyFileVariable: 'identity',passphraseVariable: '', usernameVariable: 'username')]) { 
+                            remote.identityFile = identity
+                            sshCommand remote: remote, command: "cd ./${params.NameOfTargetFolder}/Ansible/ ; ansible-playbook ./Playbooks/${params.Exercise}.yaml"
+                        }
+                    }
                 }
             }
         }
