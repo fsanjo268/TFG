@@ -183,6 +183,11 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
     bridge = "vmbr0"
   }
 
+  network_interface {
+    name = "eth2"
+    bridge = "vmbr0"
+  }
+
 
   disk {
     datastore_id = "local"
@@ -205,14 +210,19 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
       }
     }
 
+    //Attacker Network
+    ip_config {
+      ipv4 {
+        address = "192.168.2.100/24"
+      }
+    }
 
-    //DMZ Network
+    //Intranett Network
     ip_config {
       ipv4 {
         address = "192.168.3.100/24"
       }
     }
-
     user_account{
         keys=[trimspace(var.ssh_key_nodo_root),trimspace(var.ssh_key_nodo_ansible)]
         password=var.root-password

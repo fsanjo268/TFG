@@ -258,6 +258,16 @@
         owner: www-data
         group: www-data
         state: directory
+        mode: '0755'
+        recurse: yes
+
+    - name: Asegurar /var/www/html es propiedad de www-data
+      file:
+        path: /var/www/html
+        owner: www-data
+        group: www-data
+        state: directory
+        mode: '0644'
         recurse: yes
 
     - name: Copiar ficheros de /srv/files/Auxiliar/Web a /var/www/html
@@ -268,3 +278,4 @@
         group: www-data
         mode: '0644'
         remote_src: yes
+      
