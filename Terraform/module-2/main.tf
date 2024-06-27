@@ -51,14 +51,14 @@ resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
             password=var.root-password
             username = "kali"
         }
-
+        //Node Network
         ip_config {
             ipv4 {
                 address = "192.168.1.101/24"
                 gateway = "192.168.1.1"
             }
         }
-
+        //Attacker Network
         ip_config {
             ipv4 {
                 address = "192.168.2.101/24"
@@ -84,10 +84,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
   node_name = "tfg2010"
   vm_id = "30${count.index+1}"
   started = true
-  unprivileged = true
-  features {
-    nesting = true
-  }
+  unprivileged = false
   timeout_create = 3000
 
   operating_system {
@@ -127,7 +124,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
 
     hostname = "LXC-ub-in-${count.index+1}"
 
-    //Node Networkk
+    //Node Network
     ip_config {
       ipv4 {
         address = "192.168.1.10${(count.index+3)-1}/24"
@@ -135,7 +132,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
       }
     }
 
-    //DMZ Network
+    //Intranet Network
     ip_config {
       ipv4 {
         address = "192.168.3.10${count.index+1}/24"
@@ -202,7 +199,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
 
     hostname = "LXC-ub-ro-1"
 
-    //Node Networkk
+    //Node Network
     ip_config {
       ipv4 {
         address = "192.168.1.100/24"
@@ -217,7 +214,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
       }
     }
 
-    //Intranett Network
+    //Intranet Network
     ip_config {
       ipv4 {
         address = "192.168.3.100/24"

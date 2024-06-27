@@ -1,4 +1,5 @@
 # Playbook kali
+
 - name: Configuracion de resolv.conf Kali Linux
   hosts: kali
   become: true
@@ -11,7 +12,9 @@
         owner: root
         group: root
         mode: '0644'
+
 # Playbook router
+
 - name: Configuracion de ip_forward e iptables en Router
   hosts: router
   become: true
@@ -68,15 +71,7 @@
 - name: Configurar servidor MySQL e importar archivos SQL
   hosts: LXC-ub-in-2
   become: true
-  tasks:
-  
-#    - name: Actualizar paquetes del sistema
-#      apt:
-#        upgrade: dist
-#       state: latest
-#       update_cache: true
-#     ignore_errors: yes
-      
+  tasks:  
     - name: Instalar servicios
       apt:
         name: 
@@ -181,13 +176,6 @@
   hosts: LXC-ub-in-1
   become: true
   tasks:
-#   - name: Actualizar paquetes del sistema
-#     apt:
-#      upgrade: dist
-#      state: latest
-#      update_cache: true
-#     ignore_errors: yes
-
     - name: Instalar servicios
       apt:
         name:
@@ -251,10 +239,19 @@
     - name: Guardar reglas de iptables en /etc/iptables/rules.v4
       become: true
       shell: iptables-save > /etc/iptables/rules.v4
-       
-    - name: Asegurar /var/www/html es propiedad de www-data
+
+    - name: Copiar ficheros de /srv/files/Auxiliar/Web a /var/www/html
+      copy:
+        src: /srv/files/Auxiliar/Web/
+        dest: /var/www/html/
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        remote_src: yes
+
+    - name: Asegurar /var/www/ es propiedad de www-data
       file:
-        path: /var/www/html
+        path: /var/www/
         owner: www-data
         group: www-data
         state: directory
@@ -270,12 +267,8 @@
         mode: '0644'
         recurse: yes
 
-    - name: Copiar ficheros de /srv/files/Auxiliar/Web a /var/www/html
-      copy:
-        src: /srv/files/Auxiliar/Web/
-        dest: /var/www/html/
-        owner: www-data
-        group: www-data
-        mode: '0644'
-        remote_src: yes
+    - name: Eliminar fichero index.html
+      ansible.builtin.file:
+       path: /var/www/html/index.html
+       state: absent
       
