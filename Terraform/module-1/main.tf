@@ -149,7 +149,7 @@ resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Intranet" {
 
 resource "proxmox_virtual_environment_container" "LXC_Ubuntu_Router" {
   
-  depends_on = [ proxmox_virtual_environment_vm.VM_Kali_Attacker ]
+  depends_on = [ proxmox_virtual_environment_vm.LXC_Ubuntu_Intranet ]
 
   node_name = "tfg2010"
   vm_id =100

@@ -82,8 +82,8 @@
         state: present
         
     - name: Clone the GitHub repository
-      git:
-        repo: "https://github.com/fsanjo268/TFG.git"
+      ansible.builtin.git:
+        repo: https://github.com/fsanjo268/TFG.git
         dest: /srv/files
 
     - name: Instalar PyMySQL
@@ -186,7 +186,7 @@
         state: present
         
     - name: Clonar repositorio GitHub
-      git:
+      ansible.builtin.git:
         repo: https://github.com/fsanjo268/TFG.git
         dest: /srv/files
         
