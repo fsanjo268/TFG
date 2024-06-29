@@ -85,6 +85,10 @@
       ansible.builtin.git:
         repo: https://github.com/fsanjo268/TFG.git
         dest: /srv/files
+      register: git_result
+      until: git_result is succeeded
+      retries: 5
+      delay: 3
 
     - name: Instalar PyMySQL
       pip:
@@ -189,7 +193,11 @@
       ansible.builtin.git:
         repo: https://github.com/fsanjo268/TFG.git
         dest: /srv/files
-        
+      register: git_result
+      until: git_result is succeeded
+      retries: 5
+      delay: 3
+      
     - name: Crear usuario Carlos Lopez
       user:
         name: clopez
