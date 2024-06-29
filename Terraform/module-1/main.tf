@@ -6,8 +6,8 @@ resource "proxmox_virtual_environment_vm" "VM_Kali_Attacker" {
     vm_id = 200
     scsi_hardware = "virtio-scsi-single"
 
-    timeout_clone = 3600
-    timeout_create = 3000
+    timeout_clone = 4800
+    timeout_create = 4800
 
     agent {
         enabled = true
